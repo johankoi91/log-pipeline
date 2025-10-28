@@ -120,10 +120,10 @@ log-pipeline/
 
 ## 快速开始（Quick Start）
 > 需求：
-Docker & Docker Compose；
-宿主机 Linux/macOS；
-目前镜像支持 x86 架构；
-确保 tcp 9092/19092/9200/9300/5601/8083/8801 等端口可用。
+- Docker & Docker Compose
+- 宿主机 Linux/macOS；
+- 目前镜像支持 x86 架构；
+- 确保 tcp 9092/19092/9200/9300/5601/8083/8801 等端口可用。
 
 ### 1) 准备日志目录与本地数据目录
 ```bash
@@ -132,22 +132,19 @@ chmod -R 777 mount_datas/
 
 ### 2) 部署核心服务组件
 部署思路如上述架构图所示：A、B、C 业务服务器上分别部署Fluent Bit，用来配置日志路径做采集；另外准备一台服务器D部署核心服务： Kafka、Kafka Connect、Elasticsearch、Kibana。
-```bash
-D：
-请手动检查以下文件中的硬编码 <HOST_IP> 位置 并替换为你的宿主机 IP/域名：
-`docker-compose.yml`：`KAFKA_ADVERTISED_LISTENERS` 的 `EXTERNAL://<HOST_IP>:19092`
-`kafka-connector/go-pipeline-server/config.yaml`：如需跨机访问，可将 `es.host`、`connect.host` 改为 `http://<HOST_IP>:9200` / `http://<HOST_IP>:8083`
-`web-dist/client-config.json`：`{"api_base_url": "http://<HOST_IP>:8801"}`
-```
+> 请手动检查以下文件中的硬编码 <HOST_IP> 位置 并替换为你的宿主机 IP/域名：
+- `docker-compose.yml`：`KAFKA_ADVERTISED_LISTENERS` 的 `EXTERNAL://<HOST_IP>:19092`
+- `kafka-connector/go-pipeline-server/config.yaml`：如需跨机访问，可将 `es.host`、`connect.host` 改为 `http://<HOST_IP>:9200` / `http://<HOST_IP>:8083`
+- `web-dist/client-config.json`：`{"api_base_url": "http://<HOST_IP>:8801"}`
+
 
 ### 3) 启动核心服务组件
-```bash
-docker compose up -d kafka 
+
+- docker compose up -d kafka 
 间隔数秒后，kafka 启动没问题后,
-docker compose up -d kafka-init
-接着：
-docker compose up -d elasticsearch kibana connect
-```
+- docker compose up -d kafka-init
+- docker compose up -d elasticsearch kibana connect
+
 等待 Kafka/ES/Kibana/Connect/管理服务全部就绪。
 
 
@@ -165,14 +162,11 @@ docker compose up -d elasticsearch kibana connect
 
 ### 5) 部署针对各个业务服务日志源节点的收集服务
 > clone 项目到 A、B、C 上
-> 
-```bash
-修改 log-pipeline/fluent-bit/fluent-bit.conf：
-注意：一类服务对应一组[INPUT][FILTER]
-1.改 `[INPUT] - Path` 、`[INPUT] - Tag` 
-2.改 `[FILTER] - Match` （要等于上面的 `[INPUT] - Tag`）、`[FILTER] - env` 、`[FILTER] - host` 、`[FILTER] - app` 
-3.改 `[OUTPUT] - Match` （要匹配上面的 `[INPUT] - Tag`） `[OUTPUT] - Brokers` 核心服务IP:19092 
-```
+ 修改 log-pipeline/fluent-bit/fluent-bit.conf，注意：一类服务对应一组[INPUT][FILTER]：
+- 改 `[INPUT] - Path` 、`[INPUT] - Tag` 
+- 改 `[FILTER] - Match` （要等于上面的 `[INPUT] - Tag`）、`[FILTER] - env` 、`[FILTER] - host` 、`[FILTER] - app` 
+- 改 `[OUTPUT] - Match` （要匹配上面的 `[INPUT] - Tag`） `[OUTPUT] - Brokers` 核心服务IP:19092 
+
 
 ### 6) 启动日志源节点收集服务
 ```bash
