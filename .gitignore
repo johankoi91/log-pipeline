@@ -1,0 +1,3 @@
+/target
+/kafka-connector/log-adm/node_modules
+.idea

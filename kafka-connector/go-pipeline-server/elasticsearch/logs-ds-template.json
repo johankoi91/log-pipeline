@@ -1,0 +1,29 @@
+{
+  "index_patterns": ["logs-app-ds*"],
+  "priority": 500,
+  "data_stream": {},
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "index.lifecycle.name": "logs-ds-daily",
+      "index.default_pipeline": "kafka-to-es" 
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" }, 
+        "env":        { "type": "keyword" },
+        "app":        { "type": "keyword" },
+        "host":       { "type": "keyword" },
+	"message":    { "type": "text",
+          "fields": { "raw": { "type": "keyword", "ignore_above": 256 } }
+        },
+        "partition":  { "type": "integer" },
+        "offset":     { "type": "long" },
+        "file_path":  { "type": "keyword" },
+        "file_name":  { "type": "keyword" },
+        "dedup_token":{ "type": "keyword" }
+      }
+    }
+  }
+}

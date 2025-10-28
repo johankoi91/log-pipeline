@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug (Run main)",
+      "type": "go",
+      "request": "launch",
+      "program": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "GOFLAGS": "-tags=dev",
+        "GOTOOLCHAIN": "local"
+      },
+      "buildFlags": "",
+      "args": []
+    }
+  ]
+}

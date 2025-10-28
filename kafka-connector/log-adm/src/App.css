@@ -1,0 +1,132 @@
+/* 全局样式 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* 标题样式 */
+h1, h2, h3 {
+    text-align: center;
+    color: #4CAF50;
+    margin-top: 20px;
+}
+
+/* 容器样式 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 按钮样式 */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 输入框样式 */
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="text"]:focus, input[type="number"]:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* 标签样式 */
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* 分组列表样式 */
+.keyword-group {
+    margin-bottom: 20px;
+}
+
+.keyword-group h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.keyword-group .keywords {
+    background-color: #e8f5e9;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #2e7d32;
+}
+
+/* 页面标题样式 */
+.page-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #4CAF50;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+}

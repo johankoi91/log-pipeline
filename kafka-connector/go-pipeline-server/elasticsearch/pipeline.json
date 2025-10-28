@@ -1,0 +1,24 @@
+{
+    "description": "Kafka -> ES, set @timestamp and dedup_token",
+    "processors": [
+      {
+        "set": {
+          "if": "ctx.ts != null",
+          "field": "@timestamp",
+          "value": "{{ts}}"
+        }
+      },
+      {
+        "script": {
+          "lang": "painless",
+          "source": "def p=null; def o=null; if (ctx.containsKey(\"partition\") && ctx.partition != null && ctx.containsKey(\"offset\") && ctx.offset != null) { p = ctx.partition; o = ctx.offset; } if (ctx.containsKey(\"kafka_partition\") && ctx.kafka_partition != null && ctx.containsKey(\"kafka_offset\") && ctx.kafka_offset != null) { p = ctx.kafka_partition; o = ctx.kafka_offset; } if (p != null && o != null) { ctx.dedup_token = p.toString() + \"-\" + o.toString(); }"
+        }
+      },
+      {
+ 	 "script": {
+	   "lang": "painless",
+	   "source": "if (ctx.file_path != null) { String p = ctx.file_path.toString(); int i1 = p.lastIndexOf('/'); int i2 = p.lastIndexOf('\\\\'); int i = (i1 > i2) ? i1 : i2; ctx.file_name = (i >= 0 && i < p.length()-1) ? p.substring(i+1) : p; }"
+         }
+     }
+    ]
+  }

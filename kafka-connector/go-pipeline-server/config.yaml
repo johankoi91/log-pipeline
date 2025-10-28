@@ -1,0 +1,23 @@
+es:
+  host: "http://172.31.11.228:9200"
+  username: ""  # 若无鉴权，可留空
+  password: ""
+  verify_tls: false
+  names:
+    data_stream: "logs-app-ds"
+    ilm_policy: "logs-ds-daily"
+    index_template: "logs-ds-template"
+    pipeline: "kafka-to-es"
+  files:
+    ilm: "/app/static/elasticsearch/logs-ds-daily.json"
+    template: "/app/static/elasticsearch/logs-ds-template.json"
+    pipeline: "/app/static/elasticsearch/pipeline.json"
+
+connect:
+  host: "http://172.31.11.228:8083"
+  username: ""   # 若无鉴权，可留空
+  password: ""
+  names:
+    sink: "sink-es-app-logs"
+  files:
+    sink: "/app/static/connect/sink-es-app-logs.json"
