@@ -100,7 +100,7 @@ services:
       - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
       - ./fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
       - ./fluent-bit/compose_key.lua:/fluent-bit/etc/compose_key.lua:ro
-      - /data/rtc-logs/agora:/data/rtc-logs/agora:ro
       - ./mount_datas/fb_db:/var/lib/fluent-bit
+      - /data/rtc-logs:/data/rtc-logs:ro
     ports: ["2020:2020"]
     command: ["/fluent-bit/bin/fluent-bit","-c","/fluent-bit/etc/fluent-bit.conf"]

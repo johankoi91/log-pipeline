@@ -15,6 +15,22 @@
 - **Data Stream 原生化**：Connector 直接写入 Data Stream，结合 Template + ILM + Ingest Pipeline 统一治理。
 - **一键初始化**：Go 管理服务提供 API/页面，创建 ES 资源并注册 Sink Connector。
 
+## 与传统 Filebeat + Logstash + Elasticsearch 方案对比优势
+
+| 对比维度 | 本方案（Fluent Bit + Kafka + Kafka Connect + ES Data Stream） | 传统方案（Filebeat + Logstash + ES） |
+|------------|-------------------------------------------------------------|--------------------------------------------|
+| **组件数量** | 轻量、链路短：Fluent Bit → Kafka → Connect → ES | 组件多：Filebeat → Logstash → ES |
+| **性能与资源占用** | Fluent Bit 基于 C 实现，内存占用低；Kafka Connect 支持批量写入 | Logstash 基于 JRuby，内存消耗大、延迟高 |
+| **可扩展性** | Kafka 作为中心缓冲层，天然支持水平扩展与回放 | Logstash 队列有限、扩展复杂 |
+| **可靠性** | Kafka 提供持久化与重放，Connect 自带重试与 DLQ | Logstash Persistent Queue 较重，不易维护 |
+| **数据有序与幂等** | 使用 Kafka key=host:app，保证分区内顺序 + dedup_token 去重 | Logstash 流程中顺序无保证、幂等需自实现 |
+| **数据治理** | ES Data Stream + Template + ILM + Ingest Pipeline 一体化治理 | 需人工管理索引模板、ILM 与 mapping |
+| **开发维护成本** | 管理服务自动注册 Connector 与 ES 配置；配置文件简洁 | Logstash pipeline 配置繁琐、插件依赖多 |
+| **容器化与可移植性** | 全容器化部署，Compose 一键启动；跨环境迁移简单 | Logstash + Filebeat 配置繁重、版本耦合强 |
+| **延迟** | 低延迟链路（Fluent Bit → Kafka → Connect） | Logstash 通常延迟更高（多次序列化） |
+| **场景适用性** | 适合中大型集群与多服务统一日志平台 | 适合单体或简单 ETL 场景 |
+
+> 去掉 Logstash 后链路更短、性能更高、配置更简单、维护更轻量，仍保留所有必要的可靠性与扩展能力。Kafka 作为缓冲中心 + Ingest Pipeline 作为轻量处理层，组合出了“高效现代日志管线”的最佳平衡。
 ---
 
 ## 目录结构（简要）
@@ -45,16 +61,11 @@ log-pipeline/
 ---
 
 ## 快速开始（Quick Start）
-> 需求：
+### 1) 环境要求
 - Docker & Docker Compose
 - 宿主机 Linux/macOS；
 - 目前镜像支持 x86 架构；
-- 确保 tcp 9092/19092/9200/9300/5601/8083/8801 等端口可用。
-
-### 1) 准备日志目录与本地数据目录
-```bash
-chmod -R 777 mount_datas/
-```
+- 确保 TCP 9092/19092/9200/9300/5601/8083/8801 等端口可用
 
 ### 2) 部署核心服务组件
 部署思路如上述架构图所示：A、B、C 业务服务器上分别部署Fluent Bit，用来配置日志路径做采集；另外准备一台服务器D部署核心服务： Kafka、Kafka Connect、Elasticsearch、Kibana。
@@ -65,7 +76,7 @@ chmod -R 777 mount_datas/
 
 
 ### 3) 启动核心服务组件
-
+- chmod -R 777 mount_datas/
 - docker compose up -d kafka 
 间隔数秒后，kafka 启动没问题后,
 - docker compose up -d kafka-init
@@ -95,9 +106,10 @@ chmod -R 777 mount_datas/
 
 
 ### 6) 启动日志源节点收集服务
-```bash
-docker compose up -d fluent-bit
-```
+- chmod -R 777 mount_datas/
+- `docker-compose.yml` - `fluent-bit` - `volumes` 添加路径映射，比如 `- /data/rtc-logs:/data/rtc-logs:ro`
+- docker compose up -d fluent-bit
+
 
 ### 7) 在 Kibana 验证
 - 打开 `http://<HOST_IP>:5601` → Discover 添加 index ：`logs-app-ds`
@@ -107,13 +119,12 @@ docker compose up -d fluent-bit
   - 从 `file_path` 提取的 `file_name`
   - `dedup_token`（基于 Kafka 位点生成）
 
-
 ---
 
 ## 组件与配置要点说明 & check
 
 ### Fluent Bit
-- **Tail 输入**：采集 `/data/rtc-logs/agora/*.log*`
+- **Tail 输入**：采集 `/data/rtc-logs/*.log*`
 - **多行合并**：`multiline.parser` 针对堆栈等前导空白行进行粘连
 - **字段增强**：`env`/`host`/`app` 等静态或通过环境变量注入
 - **Kafka 输出**：`Message_Key_Field key`，其中 `key=host:app` 由 Lua 生成
@@ -142,6 +153,6 @@ docker compose up -d fluent-bit
 
 ---
 
-## 许可证
+###  许可证
 
 
