@@ -65,7 +65,7 @@ services:
 
   # 5) Kafka Connect（内置 ES Sink 插件）
   connect:
-    image: log-pipeline-connect:amd64-pre
+    image: ghcr.io/johankoi91/log-pipeline-connect:amd64-pre
     platform: linux/amd64
     container_name: connect
     ports: ["8801:8801","8083:8083"]
